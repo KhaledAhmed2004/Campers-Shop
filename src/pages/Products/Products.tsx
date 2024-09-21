@@ -33,17 +33,6 @@ const Products = () => {
 
   return (
     <div className="mt-6 mb-28 px-4 lg:px-20 min-h-screen">
-      <div className=" side-text   mb-10">
-        <p className="font-semibold ms-2 lg:text-[22px] ">
-          Product <span className="primary-color">Collections</span>
-        </p>
-        <div className="flex justify-between mt-0 ">
-          <h2 className=" lg:text-2xl  ms-2  font-[500]  ">
-            Find the Perfect Camping Essentials
-          </h2>
-        </div>
-      </div>
-      <ProductsGallery />
       <div className="divider font-semibold  "></div>
       {/* search */}
 
