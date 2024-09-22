@@ -1,10 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/hook";
 import { SubmitHandler, useForm } from "react-hook-form";
-
-import { clearCart } from "../../redux/features/cartSlice";
 import { useAddOrderMutation } from "../../redux/api/api";
+// import toast from "react-hot-toast";
 import { toast } from "sonner";
+import { clearCart } from "../../redux/features/cartSlice";
 import { TResponse } from "../../types";
 
 type CheckOutInputs = {
@@ -14,17 +14,23 @@ type CheckOutInputs = {
   address: string;
   cashOnDelivery: boolean;
 };
-const Checkout = () => {
-  const { selectedProducts, totalPrice, products } = useAppSelector(
-    (store) => store.cart
-  );
-  const { register, handleSubmit } = useForm<CheckOutInputs>();
-  const navigate = useNavigate();
+
+const CheckoutPage = () => {
+  const { totalPrice, products } = useAppSelector((store) => store.cart);
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CheckOutInputs>();
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
   const [addOrder] = useAddOrderMutation();
+
   const onSubmit: SubmitHandler<CheckOutInputs> = async (data) => {
-    const toastId = toast.loading("Creating....");
-    // console.log(data.cashOnDelivery);
+    console.log(data);
+    const toastId = toast.loading("Creating order...");
+
     const orderInformation = {
       name: data.name,
       email: data.email,
@@ -43,127 +49,133 @@ const Checkout = () => {
         toast.error(res.error?.data?.message, { id: toastId });
       } else {
         toast.success(res.data?.message, { id: toastId });
+        dispatch(clearCart());
+        navigate("/success");
       }
     } catch (err) {
-      toast.error("Something Went Wrong!!");
+      toast.error("Something went wrong!", { id: toastId });
     }
-
-    dispatch(clearCart());
-    navigate("/success");
-    // console.log(data);
   };
+
   return (
-    <div className=" min-h-screen mt-12 mb-28 px-4 lg:px-20 ">
-      <div className=" mt-3 side-text ">
-        <p className="font-semibold ms-2 lg:text-[22px] primary-color">
-          Checkout
-        </p>
-        <div className="flex justify-between mt-0 ">
-          <h2 className=" lg:text-2xl  ms-2  font-[500]  ">
-            Finalize Your Order
-          </h2>
+    <div className="min-h-screen p-6">
+      <div className="max-w-6xl mx-auto">
+        <div className="flex flex-col lg:flex-row space-y-8 lg:space-y-0 lg:space-x-8">
+          {/* Order Summary */}
+          <div className="lg:w-1/3 bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+              Order Summary
+            </h2>
+            <div className="border-b pb-4 mb-4">
+              {products.map((product) => (
+                <div
+                  key={product._id}
+                  className="flex justify-between items-center"
+                >
+                  <p className="text-gray-600">{product.name}</p>
+                  <p className="text-gray-800 font-semibold">
+                    ৳ {product.price * product.quantity}
+                  </p>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-between items-center text-lg font-semibold">
+              <p>Total</p>
+              <p>৳ {totalPrice}</p>
+            </div>
+          </div>
+
+          {/* Payment info Section */}
+          <div className="lg:w-2/3 bg-white p-6 rounded-lg shadow-lg">
+            <h2 className="text-2xl font-semibold text-gray-800 mb-6">
+              Payment Info
+            </h2>
+
+            <form onSubmit={handleSubmit(onSubmit)}>
+              <div className="space-y-4 mb-6">
+                <input
+                  {...register("name", { required: "Name is required" })}
+                  type="text"
+                  placeholder="Full Name"
+                  className={`w-full p-3 border ${
+                    errors.name ? "border-red-500" : "border-gray-300"
+                  } rounded-md shadow-sm`}
+                  aria-label="Full Name"
+                />
+                {errors.name && (
+                  <p className="text-red-500 text-sm">{errors.name.message}</p>
+                )}
+
+                <input
+                  {...register("email", { required: "Email is required" })}
+                  type="email"
+                  placeholder="Email"
+                  className={`w-full p-3 border ${
+                    errors.email ? "border-red-500" : "border-gray-300"
+                  } rounded-md shadow-sm`}
+                  aria-label="Email"
+                />
+                {errors.email && (
+                  <p className="text-red-500 text-sm">{errors.email.message}</p>
+                )}
+
+                <input
+                  {...register("number", {
+                    required: "Phone number is required",
+                  })}
+                  type="tel"
+                  placeholder="Phone Number"
+                  className={`w-full p-3 border ${
+                    errors.number ? "border-red-500" : "border-gray-300"
+                  } rounded-md shadow-sm`}
+                  aria-label="Phone Number"
+                />
+                {errors.number && (
+                  <p className="text-red-500 text-sm">
+                    {errors.number.message}
+                  </p>
+                )}
+
+                <input
+                  {...register("address", { required: "Address is required" })}
+                  type="text"
+                  placeholder="Address Line 1"
+                  className={`w-full p-3 border ${
+                    errors.address ? "border-red-500" : "border-gray-300"
+                  } rounded-md shadow-sm`}
+                  aria-label="Address Line 1"
+                />
+                {errors.address && (
+                  <p className="text-red-500 text-sm">
+                    {errors.address.message}
+                  </p>
+                )}
+
+                <div className="flex items-center space-x-2">
+                  <input
+                    {...register("cashOnDelivery")}
+                    type="checkbox"
+                    id="cashOnDelivery"
+                    className="checkbox"
+                  />
+                  <label htmlFor="cashOnDelivery">Cash on Delivery</label>
+                </div>
+              </div>
+
+              {/* Checkout Button */}
+              <button
+                type="submit"
+                className="w-full py-3 bg-green-600 text-white font-semibold rounded-md hover:bg-green-700 transition duration-300"
+              >
+                Place Order
+              </button>
+            </form>
+          </div>
         </div>
       </div>
-      <div className="divider">Checkout Information</div>
-
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="lg:flex   justify-between gap-10  w-full ">
-          {/* CheckOut Form */}
-
-          <div className="lg:w-[80%] border p-10 mt-8">
-            <div className="mb-3">
-              <label className="block text-sm font-medium leading-6 text-gray-900">
-                Name :
-              </label>
-              <div className="relative mt-2 rounded-md shadow-sm">
-                <input
-                  type="text"
-                  required
-                  {...register("name")}
-                  placeholder="Your Name"
-                  className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400  sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
-            <div className="mb-3">
-              <label className="block text-sm font-medium leading-6 text-gray-900">
-                Email :
-              </label>
-              <div className="relative mt-2 rounded-md shadow-sm">
-                <input
-                  type="text"
-                  required
-                  {...register("email")}
-                  placeholder="Email"
-                  className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400  sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
-            <div className="mb-3">
-              <label className="block text-sm font-medium leading-6 text-gray-900">
-                Phone Number:
-              </label>
-              <div className="relative mt-2 rounded-md shadow-sm">
-                <input
-                  type="text"
-                  required
-                  {...register("number")}
-                  placeholder="Phone Number"
-                  className="block w-full rounded-md border-0 py-1.5 pl-7 pr-20 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400  sm:text-sm sm:leading-6"
-                />
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium leading-6 text-gray-900">
-                Address:
-              </label>
-              <div className="relative mt-2 rounded-md shadow-sm">
-                <textarea
-                  required
-                  className="textarea textarea-bordered w-full"
-                  placeholder="Describe Your Shipping Address"
-                  {...register("address")}
-                ></textarea>
-              </div>
-            </div>
-          </div>
-          {/* Order Details */}
-          <div className="mt-7 ">
-            <div className="lg:w-96 w-full  border border-gray-200 bg-opacity-35 rounded-md">
-              <h1 className="text-3xl font-bold text-dark text-center  mt-5 uppercase">
-                Order Details
-              </h1>
-              <div className="divider mt-0"></div>
-              <div className="px-6 py-4 space-y-6 ">
-                <p className="text-lg font-semibold text-dark mt-2">
-                  Selected Products: {selectedProducts}
-                </p>
-                <p className="text-lg text-dark font-semibold mt-2">
-                  Total Price: ${totalPrice}
-                </p>
-              </div>
-              <div className=" flex items-center ms-7 mt-3  space-x-2">
-                <input
-                  {...register("cashOnDelivery")}
-                  type="checkbox"
-                  className="checkbox "
-                  required
-                />
-                <label className="text-xl font-bold ">Cash on Delivery</label>
-              </div>
-              <div className="pb-5 px-4 mt-10 ">
-                {/* <Link to="/success"> */}
-                <button type="submit" className="custom-outline-btn w-full ">
-                  Place Order
-                </button>
-                {/* </Link> */}
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
     </div>
   );
 };
 
-export default Checkout;
+export default CheckoutPage;

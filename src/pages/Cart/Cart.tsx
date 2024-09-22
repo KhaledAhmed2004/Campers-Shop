@@ -3,25 +3,25 @@ import PricingDetails from "./PricingDetails";
 import SingleCartProduct from "./SingleCartProduct";
 
 const Cart = () => {
+  // Get the products from the Redux store
   const products = useAppSelector((store) => store.cart.products);
-  // console.log(products);
 
   return (
-    <div className="my-[70px] px-4 lg:px-20  min-h-screen ">
-      <div className="lg:flex lg:flex-row lg:space-y-0 space-y-5  justify-center lg:space-x-40">
-        <div className="space-y-5 lg:mt-0 mt-5">
+    <div className="my-[70px] px-4 lg:px-20 min-h-screen">
+      <div className="lg:flex lg:flex-row lg:space-y-0 space-y-5 justify-center lg:space-x-40">
+        <div className="space-y-5 lg:mt-0 mt-5 w-full lg:w-2/3">
           {/* Cart Products */}
           {products.length ? (
-            products.map((product: any) => (
+            products.map((product) => (
               <SingleCartProduct key={product._id} product={product} />
             ))
           ) : (
-            <p>No Product Found </p>
+            <p className="text-lg text-gray-600">No Product Found</p>
           )}
         </div>
 
-        {/* order pricing details */}
-        <PricingDetails></PricingDetails>
+        {/* Order pricing details */}
+        <PricingDetails />
       </div>
     </div>
   );

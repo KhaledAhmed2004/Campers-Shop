@@ -1,10 +1,10 @@
+import React, { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useProductDetailsQuery } from "../redux/api/api";
 import { Rating } from "@smastrom/react-rating";
 import { useAppDispatch } from "../redux/hook";
 import { TProduct } from "../types";
 import { addToCart } from "../redux/features/cartSlice";
-import { useState } from "react";
 import swal from "sweetalert2";
 import { TbCurrencyTaka } from "react-icons/tb";
 import { FaPlus, FaMinus } from "react-icons/fa6";
@@ -13,15 +13,25 @@ const ProductDetailsPage = () => {
   const { id } = useParams(); // Get the product ID from the URL parameters
   const { data } = useProductDetailsQuery(id); // Fetch product details
   const [count, setCount] = useState(1); // Local state to manage quantity
+  const [glassPosition, setGlassPosition] = useState({
+    display: "none",
+    left: "0px",
+    top: "0px",
+    backgroundPosition: "0px 0px",
+    backgroundImage: "",
+    backgroundSize: "0px 0px",
+  });
 
   const singleProduct = data?.data; // Get the product data from the fetched data
   const dispatch = useAppDispatch();
   const availableQuantity = singleProduct?.stockQuantity - count || 0;
+
+  const imgRef = useRef<HTMLImageElement>(null);
+
   // Function to handle adding the product to the cart
   const handleAddToCart = (product: TProduct) => {
     dispatch(addToCart({ product, quantity: count })); // Dispatch the addToCart action
     swal.fire({
-      // Show success notification
       title: "Product Added Successfully",
       text: "Go to Cart Page to Place Order",
       icon: "success",
@@ -29,28 +39,103 @@ const ProductDetailsPage = () => {
     });
   };
 
+  // Magnifier logic
+  useEffect(() => {
+    const img = imgRef.current;
+
+    function moveMagnifier(e: MouseEvent) {
+      if (!img) return;
+
+      const imgRect = img.getBoundingClientRect();
+      const glassSize = 150; // Size of the magnifier glass
+      const x = e.pageX - imgRect.left;
+      const y = e.pageY - imgRect.top;
+
+      if (x > 0 && y > 0 && x < imgRect.width && y < imgRect.height) {
+        const displayX = x - glassSize / 2;
+        const displayY = y - glassSize / 2;
+
+        setGlassPosition({
+          display: "block",
+          left: `${displayX}px`,
+          top: `${displayY}px`,
+          backgroundPosition: `-${x * 2}px -${y * 2}px`,
+          backgroundImage: `url(${singleProduct?.image})`,
+          backgroundSize: `${imgRect.width * 2}px ${imgRect.height * 2}px`,
+        });
+      } else {
+        setGlassPosition({ ...glassPosition, display: "none" });
+      }
+    }
+
+    if (img) {
+      img.addEventListener("mousemove", moveMagnifier);
+      img.addEventListener("mouseleave", () =>
+        setGlassPosition({ ...glassPosition, display: "none" })
+      );
+    }
+
+    return () => {
+      if (img) {
+        img.removeEventListener("mousemove", moveMagnifier);
+        img.removeEventListener("mouseleave", () =>
+          setGlassPosition({ ...glassPosition, display: "none" })
+        );
+      }
+    };
+  }, [singleProduct?.image, glassPosition]);
+
   return (
     <div className="my-20 px-4 lg:px-20 min-h-screen">
+      <style>
+        {`
+          .img-magnifier-container {
+            position: relative;
+          }
+          .img-magnifier-glass {
+            position: absolute;
+            border: 3px solid #000;
+            border-radius: 50%;
+            cursor: none;
+            width: 150px;
+            height: 150px;
+            pointer-events: none;
+            display: none;
+          }
+        `}
+      </style>
       <div className="flex flex-col lg:flex-row lg:justify-between lg:gap-8">
-        {/* Product Image */}
-        <div className="lg:w-1/2 h-[450px] bg-gray-100 flex justify-center items-center rounded-lg shadow-lg">
+        {/* Product Image with Magnifier */}
+        <div className="overflow-hidden bg-center bg-contain lg:w-1/2 h-[450px] bg-gray-100 flex justify-center items-center rounded-lg shadow-lg img-magnifier-container">
           <img
+            ref={imgRef}
             src={singleProduct?.image}
             alt="Product"
-            className="w-full h-full object-cover rounded-lg"
+            className="w-full h-full rounded-lg object-contain object-center"
+          />
+          <div
+            className="img-magnifier-glass"
+            style={{
+              display: glassPosition.display,
+              left: glassPosition.left,
+              top: glassPosition.top,
+              backgroundImage: glassPosition.backgroundImage,
+              backgroundSize: glassPosition.backgroundSize,
+              backgroundPosition: glassPosition.backgroundPosition,
+            }}
           />
         </div>
 
         {/* Product Details */}
         <div className="lg:w-1/2 mt-10 lg:mt-0">
           <h4 className="mb-2 font-medium text-lg text-gray-600">
-            {singleProduct?.category} {/* Display product category */}
+            {singleProduct?.category}
           </h4>
           <h4 className="mb-4 font-bold text-3xl text-gray-800">
-            {singleProduct?.name} {/* Display product name */}
+            {singleProduct?.name}
           </h4>
           <p className="text-lg text-gray-700 mb-4">
-            {singleProduct?.description} {/* Display product description */}
+            {singleProduct?.description}
           </p>
 
           {/* Product Ratings */}
