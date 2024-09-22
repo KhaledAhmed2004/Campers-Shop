@@ -14,6 +14,7 @@ import {
   FaFirstAid,
   FaUmbrellaBeach,
 } from "react-icons/fa";
+import { GiRubberBoot, GiSchoolBag } from "react-icons/gi";
 
 const ProductsPage = () => {
   // State management for filters
@@ -32,6 +33,7 @@ const ProductsPage = () => {
     maxPrice,
     sortByOrder,
   });
+  console.log(products);
 
   // Function to clear all filters
   const handleForClear = () => {
@@ -110,8 +112,8 @@ const ProductsPage = () => {
                 {[
                   { name: "All", icon: <FaUmbrellaBeach /> },
                   { name: "Tents & Shelters", icon: <FaCampground /> },
-                  { name: "Backpacks & Bags", icon: <FaCampground /> },
-                  { name: "Footwear", icon: <FaCampground /> },
+                  { name: "Backpacks & Bags", icon: <GiSchoolBag /> },
+                  { name: "Footwear", icon: <GiRubberBoot /> },
                   { name: "Lighting & Navigation", icon: <FaMapSigns /> },
                   { name: "Camp Furniture", icon: <FaChair /> },
                   { name: "Health & Safety", icon: <FaFirstAid /> },
@@ -198,8 +200,8 @@ const ProductsPage = () => {
               {[
                 { name: "All", icon: <FaUmbrellaBeach /> },
                 { name: "Tents & Shelters", icon: <FaCampground /> },
-                { name: "Backpacks & Bags", icon: <FaCampground /> },
-                { name: "Footwear", icon: <FaCampground /> },
+                { name: "Backpacks & Bags", icon: <GiSchoolBag /> },
+                { name: "Footwear", icon: <GiRubberBoot /> },
                 { name: "Lighting & Navigation", icon: <FaMapSigns /> },
                 { name: "Camp Furniture", icon: <FaChair /> },
                 { name: "Health & Safety", icon: <FaFirstAid /> },
