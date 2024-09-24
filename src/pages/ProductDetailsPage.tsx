@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { useProductDetailsQuery } from "../redux/api/api";
 import { Rating } from "@smastrom/react-rating";
@@ -10,9 +10,9 @@ import { TbCurrencyTaka } from "react-icons/tb";
 import { FaPlus, FaMinus } from "react-icons/fa6";
 
 const ProductDetailsPage = () => {
-  const { id } = useParams(); // Get the product ID from the URL parameters
-  const { data } = useProductDetailsQuery(id); // Fetch product details
-  const [count, setCount] = useState(1); // Local state to manage quantity
+  const { id } = useParams();
+  const { data } = useProductDetailsQuery(id);
+  const [count, setCount] = useState(1);
   const [glassPosition, setGlassPosition] = useState({
     display: "none",
     left: "0px",
@@ -22,21 +22,31 @@ const ProductDetailsPage = () => {
     backgroundSize: "0px 0px",
   });
 
-  const singleProduct = data?.data; // Get the product data from the fetched data
+  const singleProduct = data?.data;
   const dispatch = useAppDispatch();
   const availableQuantity = singleProduct?.stockQuantity - count || 0;
 
   const imgRef = useRef<HTMLImageElement>(null);
 
-  // Function to handle adding the product to the cart
+  useEffect(() => {
+    // Reset count if product is out of stock
+    if (singleProduct && singleProduct.stockQuantity === 0) {
+      setCount(0); // or set to 1 if you prefer
+    } else {
+      setCount(1); // Reset to 1 if there's stock
+    }
+  }, [singleProduct]);
+
   const handleAddToCart = (product: TProduct) => {
-    dispatch(addToCart({ product, quantity: count })); // Dispatch the addToCart action
-    swal.fire({
-      title: "Product Added Successfully",
-      text: "Go to Cart Page to Place Order",
-      icon: "success",
-      confirmButtonColor: "#3085d6",
-    });
+    if (count > 0) {
+      dispatch(addToCart({ product, quantity: count }));
+      swal.fire({
+        title: "Product Added Successfully",
+        text: "Go to Cart Page to Place Order",
+        icon: "success",
+        confirmButtonColor: "#3085d6",
+      });
+    }
   };
 
   // Magnifier logic
@@ -47,7 +57,7 @@ const ProductDetailsPage = () => {
       if (!img) return;
 
       const imgRect = img.getBoundingClientRect();
-      const glassSize = 150; // Size of the magnifier glass
+      const glassSize = 150;
       const x = e.pageX - imgRect.left;
       const y = e.pageY - imgRect.top;
 
@@ -183,7 +193,9 @@ const ProductDetailsPage = () => {
               </button>
               <span className="text-2xl font-semibold mx-2">{count}</span>
               <button
-                onClick={() => setCount(count + 1)}
+                onClick={() =>
+                  count < singleProduct?.stockQuantity && setCount(count + 1)
+                }
                 disabled={singleProduct?.stockQuantity === count}
               >
                 <FaPlus className="text-gray-600 hover:text-gray-800" />

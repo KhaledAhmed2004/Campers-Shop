@@ -4,23 +4,29 @@ import {
   useGetProductsQuery,
   useUpdateProductMutation,
 } from "../../redux/api/api";
-import { TProduct, TResponse } from "../../types";
+// import { TProduct, TResponse } from "../../types";
 import Swal from "sweetalert2";
 import { Link } from "react-router-dom";
 import { Table, Button, Space, Image, Modal } from "antd";
 import { EyeOutlined, EditOutlined, DeleteOutlined } from "@ant-design/icons";
-import { SubmitHandler, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useState } from "react";
+import { TProduct, TResponse } from "../../types";
 
 const ProductsTable = () => {
   const { data: products } = useGetProductsQuery({});
   const [deleteProduct] = useDeleteProductMutation();
   const [updateProduct] = useUpdateProductMutation();
   const [isModalVisible, setIsModalVisible] = useState(false);
+  // const [selectedProduct, setSelectedProduct] = useState<TProduct | null>(null);
+  // const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState<TProduct | null>(null);
-  const { register, handleSubmit, reset } = useForm<TProduct>();
+
+  // const { register, handleSubmit, reset } = useForm<TProduct>();
+  const { register, handleSubmit, reset } = useForm();
 
   const handleDelete = async (productDeleteId: string) => {
+    console.log(productDeleteId);
     Swal.fire({
       title: "Are you sure?",
       text: "You won't be able to revert this!",
@@ -37,14 +43,14 @@ const ProductsTable = () => {
     });
   };
 
-  const handleEdit = (product: TProduct) => {
+  const handleEdit = (product: any) => {
     console.log("Editing Product:", product);
     setSelectedProduct(product);
     reset(product);
     setIsModalVisible(true);
   };
 
-  const onSubmit: SubmitHandler<TProduct> = async (data) => {
+  const onSubmit = async (data: any) => {
     const toastId = toast.loading("Updating....");
     const productData = {
       _id: selectedProduct?.key,
@@ -61,7 +67,9 @@ const ProductsTable = () => {
     try {
       const res = (await updateProduct(productData)) as TResponse<any>;
       if (res.error) {
-        toast.error(res.error?.data?.message, { id: toastId });
+        toast.error(res.error?.data?.message, {
+          id: toastId,
+        });
       } else {
         toast.success(res.data?.message, { id: toastId });
         setIsModalVisible(false);
@@ -79,38 +87,33 @@ const ProductsTable = () => {
       render: (image: string) => (
         <Image width={50} height={50} src={image} alt="Product Image" />
       ),
-      align: "center",
     },
     {
       title: "Name",
       dataIndex: "name",
       key: "name",
-      align: "center",
     },
     {
       title: "Price",
       dataIndex: "price",
       key: "price",
       render: (price: number) => `$${price}`,
-      align: "center",
     },
     {
       title: "Category",
       dataIndex: "category",
       key: "category",
-      align: "center",
     },
     {
       title: "Quantity", // Add Quantity column here
       dataIndex: "stockQuantity",
       key: "stockQuantity",
-      align: "center",
       render: (quantity: number) => `${quantity} units`, // You can format it however you want
     },
     {
       title: "Actions",
       key: "actions",
-      render: (text: any, record: TProduct) => (
+      render: (_: any, record: any) => (
         <Space size="middle">
           <Link to={`/products/${record.key}`}>
             <Button type="primary" size="small" icon={<EyeOutlined />}>
@@ -129,17 +132,16 @@ const ProductsTable = () => {
             danger
             size="small"
             icon={<DeleteOutlined />}
-            onClick={() => handleDelete(record._id)}
+            onClick={() => handleDelete(record?.key)}
           >
             Delete
           </Button>
         </Space>
       ),
-      align: "center",
     },
   ];
 
-  const dataSource = products?.data?.map((product: TProduct) => ({
+  const dataSource = products?.data?.map((product) => ({
     key: product._id,
     image: product.image,
     name: product.name,

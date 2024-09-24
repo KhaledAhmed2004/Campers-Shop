@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Rating } from "@smastrom/react-rating";
 
 type ProductCardProps = {
-  _id: string;
+  _id?: string;
   name: string;
   image: string;
   price: number;
@@ -23,7 +23,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
       {/* Product Image */}
       <div className="w-full h-[220px] bg-gray-100 flex justify-center items-center">
         <img
-          src={image || "/default-product-image.jpg"}
+          src={image}
           alt={name || "Product Picture"}
           className="w-full h-full object-fit bg-center transition-transform duration-300 hover:scale-105"
         />
@@ -31,9 +31,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
 
       {/* Product Details */}
       <div className="p-4">
-        <h3 className="text-lg font-bold text-gray-800 truncate">
-          {name || "Unnamed Product"}
-        </h3>
+        <h3 className="text-lg font-bold text-gray-800 truncate">{name}</h3>
 
         {/* Price */}
         <h4 className="text-primary text-xl font-semibold mt-2">
@@ -41,9 +39,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         </h4>
 
         {/* Category */}
-        <p className="text-sm text-gray-500 mt-1">
-          Category: {category || "Unknown"}
-        </p>
+        <p className="text-sm text-gray-500 mt-1">Category: {category}</p>
 
         {/* Ratings */}
         <div className="flex items-center justify-between mt-3">

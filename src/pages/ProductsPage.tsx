@@ -1,6 +1,6 @@
 import "@smastrom/react-rating/style.css";
 import { useGetProductsQuery } from "../redux/api/api";
-import { TProduct } from "../types";
+// import { TProduct } from "../types";
 import { useState } from "react";
 import ProductCard from "../components/card/ProductCard";
 import { Drawer, Slider, Button, Select } from "antd";
@@ -15,13 +15,16 @@ import {
   FaUmbrellaBeach,
 } from "react-icons/fa";
 import { GiRubberBoot, GiSchoolBag } from "react-icons/gi";
+import { TProduct } from "../types";
 
 const ProductsPage = () => {
   // State management for filters
   const [searchQuery, setSearchQuery] = useState("");
   const [category, setCategory] = useState("All");
-  const [minPrice, setMinPrice] = useState<number | "">("");
-  const [maxPrice, setMaxPrice] = useState<number | "">("");
+  // const [minPrice, setMinPrice] = useState<number | "">("");
+  // const [maxPrice, setMaxPrice] = useState<number | "">("");
+  const [minPrice, setMinPrice] = useState<number>(0);
+  const [maxPrice, setMaxPrice] = useState<number>(100);
   const [sortByOrder, setSortByOrder] = useState<"asc" | "desc">("asc");
   const [drawerVisible, setDrawerVisible] = useState(false);
 
@@ -33,14 +36,15 @@ const ProductsPage = () => {
     maxPrice,
     sortByOrder,
   });
-  console.log(products);
 
   // Function to clear all filters
   const handleForClear = () => {
     setSearchQuery("");
     setCategory("All");
-    setMinPrice("");
-    setMaxPrice("");
+    // setMinPrice("");
+    // setMaxPrice("");
+    setMinPrice(0);
+    setMaxPrice(100);
     setSortByOrder("asc");
   };
 

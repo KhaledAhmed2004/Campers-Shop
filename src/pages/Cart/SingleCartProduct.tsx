@@ -3,18 +3,18 @@ import {
   removeAProductFromCart,
   updateQuantity,
 } from "../../redux/features/cartSlice";
-import { Modal } from "antd"; // Ant Design modal
+import { Modal } from "antd";
 import Swal from "sweetalert2";
 import { MdDeleteOutline } from "react-icons/md";
 import { FaPlus, FaMinus } from "react-icons/fa6";
 
-// Define the type for the product prop
 interface Product {
   _id: string;
   image: string;
   name: string;
   price: number;
   quantity: number;
+  stockQuantity: number; // Ensure stock is part of the Product interface
 }
 
 interface SingleCartProductProps {
@@ -27,6 +27,18 @@ const SingleCartProduct: React.FC<SingleCartProductProps> = ({ product }) => {
   // Handle quantity changes for the product
   const handleQuantity = (type: string, _id: string) => {
     const payload = { type, _id };
+
+    // Check if incrementing exceeds stock limit
+    if (type === "increment" && product.quantity >= product?.stockQuantity) {
+      Swal.fire({
+        icon: "warning",
+        title: "Stock limit reached",
+        text: `You cannot add more than ${product?.stockQuantity} items of this product.`,
+        timer: 1500,
+      });
+      return;
+    }
+
     dispatch(updateQuantity(payload));
   };
 
@@ -52,7 +64,6 @@ const SingleCartProduct: React.FC<SingleCartProductProps> = ({ product }) => {
 
   return (
     <div className="flex flex-col lg:flex-row items-center justify-between space-x-3 border-2 border-gray-200 rounded-3xl p-4 bg-white">
-      {/* Product Image */}
       <div className="bg-gray-200 w-[100px] h-[80px] rounded-2xl overflow-hidden me-2">
         <img
           src={product?.image}
@@ -61,17 +72,15 @@ const SingleCartProduct: React.FC<SingleCartProductProps> = ({ product }) => {
         />
       </div>
 
-      {/* Product Details */}
       <div className="lg:flex-grow lg:mx-4">
         <h3 className="lg:text-lg font-semibold mb-2">{product.name}</h3>
         <p className="lg:text-lg font-bold">${product?.price.toFixed(2)}</p>
 
-        {/* Quantity Controls */}
         <div className="flex items-center space-x-2 mt-4">
           <button
             onClick={() => handleQuantity("decrement", product._id)}
             className="p-2 border rounded-full hover:bg-gray-200 transition duration-200"
-            disabled={product.quantity <= 1} // Disable if quantity is 1 or less
+            disabled={product.quantity <= 1}
           >
             <FaMinus />
           </button>
@@ -81,13 +90,13 @@ const SingleCartProduct: React.FC<SingleCartProductProps> = ({ product }) => {
           <button
             className="p-2 border rounded-full hover:bg-gray-200 transition duration-200"
             onClick={() => handleQuantity("increment", product._id)}
+            // disabled={product.quantity >= product.stockQuantity} // This line checks the stock limit
           >
             <FaPlus />
           </button>
         </div>
       </div>
 
-      {/* Remove Product Button */}
       <button
         onClick={handleRemoveAProductFromCart}
         className="bg-gray-800 text-white text-xl p-2 rounded-full mt-4 lg:mt-0 hover:bg-red-800 transition duration-200"

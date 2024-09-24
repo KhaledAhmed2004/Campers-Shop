@@ -2,11 +2,16 @@ import { useNavigate } from "react-router-dom";
 import { useAppDispatch, useAppSelector } from "../../redux/hook";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { useAddOrderMutation } from "../../redux/api/api";
-// import toast from "react-hot-toast";
 import { toast } from "sonner";
 import { clearCart } from "../../redux/features/cartSlice";
 import { TResponse } from "../../types";
 
+type Product = {
+  _id: string;
+  name: string;
+  price: number;
+  quantity: number;
+};
 type CheckOutInputs = {
   name: string;
   email: string;
@@ -17,7 +22,8 @@ type CheckOutInputs = {
 
 const CheckoutPage = () => {
   const { totalPrice, products } = useAppSelector((store) => store.cart);
-
+  // console.log("products", products);
+  // console.log(products._id);
   const {
     register,
     handleSubmit,
@@ -28,7 +34,9 @@ const CheckoutPage = () => {
   const [addOrder] = useAddOrderMutation();
 
   const onSubmit: SubmitHandler<CheckOutInputs> = async (data) => {
-    console.log(data);
+    console.log("Form data:", data); // To log form inputs (name, email, etc.)
+    console.log("Cart products:", products); // To log cart products before submission
+
     const toastId = toast.loading("Creating order...");
 
     const orderInformation = {
@@ -42,7 +50,7 @@ const CheckoutPage = () => {
         quantity: item.quantity,
       })),
     };
-
+    console.log("Order information:", orderInformation);
     try {
       const res = (await addOrder(orderInformation)) as TResponse<any>;
       if (res.error) {
@@ -67,7 +75,7 @@ const CheckoutPage = () => {
               Order Summary
             </h2>
             <div className="border-b pb-4 mb-4">
-              {products.map((product) => (
+              {products.map((product: Product) => (
                 <div
                   key={product._id}
                   className="flex justify-between items-center"
@@ -152,15 +160,31 @@ const CheckoutPage = () => {
                   </p>
                 )}
 
+                {/* <div className="flex items-center space-x-2">
+                  <input
+                    {...register("cashOnDelivery", { required: true })}
+                    type="checkbox"
+                    id="cashOnDelivery"
+                    className="checkbox"
+                  />
+                  <label htmlFor="cashOnDelivery">Cash on Delivery</label>
+                </div> */}
                 <div className="flex items-center space-x-2">
                   <input
-                    {...register("cashOnDelivery")}
+                    {...register("cashOnDelivery", {
+                      required: "Select payment method",
+                    })}
                     type="checkbox"
                     id="cashOnDelivery"
                     className="checkbox"
                   />
                   <label htmlFor="cashOnDelivery">Cash on Delivery</label>
                 </div>
+                {errors.cashOnDelivery && (
+                  <p className="text-red-500 text-sm">
+                    {errors.cashOnDelivery.message}
+                  </p>
+                )}
               </div>
 
               {/* Checkout Button */}

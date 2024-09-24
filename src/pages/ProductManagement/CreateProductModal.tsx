@@ -379,6 +379,7 @@ const CreateProductModal = () => {
             <input
               id="ratings"
               type="number"
+              step="0.1"
               placeholder="Enter ratings"
               {...register("ratings", { required: "Ratings are required" })}
               className="input-field border rounded-lg w-full px-4 py-2 focus:ring-indigo-500 focus:border-indigo-500 transition ease-in-out duration-150"

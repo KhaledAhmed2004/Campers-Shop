@@ -1,5 +1,6 @@
 export type TProduct = {
-  _id: string;
+  _id?: string;
+  key?: string;
   name: string;
   price: number;
   stockQuantity: number;
@@ -10,6 +11,7 @@ export type TProduct = {
   isFeatured?: boolean;
 };
 export type TUpdateProduct = {
+  message(message: any, arg1: { id: string | number; }): unknown;
   _id?: string;
   name?: string;
   price?: number;

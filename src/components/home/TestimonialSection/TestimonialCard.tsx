@@ -1,8 +1,13 @@
 import { FaQuoteLeft, FaStar, FaStarHalfAlt, FaRegStar } from "react-icons/fa";
 
-const TestimonialCard = ({ author, review, rating }) => {
+type TestimonialCardProps = {
+  author: string;
+  review: string;
+  rating: number;
+};
+const TestimonialCard = ({ author, review, rating }: TestimonialCardProps) => {
   // Function to render star rating
-  const renderStars = (rating) => {
+  const renderStars = (rating: number) => {
     const fullStars = Math.floor(rating);
     const halfStar = rating % 1 !== 0; // Check if there's a half star
     const emptyStars = 5 - fullStars - (halfStar ? 1 : 0);

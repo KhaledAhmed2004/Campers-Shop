@@ -12,7 +12,7 @@ const Cart = () => {
         <div className="space-y-5 lg:mt-0 mt-5 w-full lg:w-2/3">
           {/* Cart Products */}
           {products.length ? (
-            products.map((product) => (
+            products.map((product: any) => (
               <SingleCartProduct key={product._id} product={product} />
             ))
           ) : (
