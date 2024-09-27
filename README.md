@@ -1,10 +1,10 @@
-# Campers Shop E-Commerce Platform
+# CampeTime E-Commerce Platform
 
 **Live Link** : https://campers-shop-jet.vercel.app/
 
-# Introduction
+## Introduction
 
-This project is the frontend for the Campers Shop, an e-commerce platform for camping enthusiasts. It provides a product search, filtering, and sorting functionality using React and Redux Toolkit Query (RTK Query) also used Redux State management for Cart Page Functionality. <br/>
+CampTime is a versatile e-commerce platform where users can browse, add, update, and purchase products seamlessly. It offers a convenient way to manage products and provides a user-friendly shopping experience.
 
 # Features
 
