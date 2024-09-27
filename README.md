@@ -1,4 +1,4 @@
-# CampeTime E-Commerce Platform
+# CampTime E-Commerce Platform
 
 **Live Link** : https://camper-shop-three.vercel.app
 
