@@ -2,17 +2,19 @@
 
 **Live Link** : https://campers-shop-jet.vercel.app/
 
-## Introduction
+# Introduction
 
 CampTime is a versatile e-commerce platform where users can browse, add, update, and purchase products seamlessly. It offers a convenient way to manage products and provides a user-friendly shopping experience.
 
 # Features
 
-1. State Management : Using Redux State Management for Cart Page.
-2. API : Using Redux RTK Query for API call.
-3. Search Functionality : Users can search for products by name or description.
-4. Filter and sorting : Users can filter products by category, price range and sort them by price (low to high, high to low).
-5. Responsive Design: Optimized for various screen sizes and devices.
+- Users can browse and purchase products.
+- Ability to change the product quantity in the cart before checkout.
+- Users can add new products to the platform.
+- Update existing product details (name, price, description, etc.).
+- Delete products from the system.
+- Fully responsive design for optimal viewing on all devices.
+
 
 # Technology Stack
 
