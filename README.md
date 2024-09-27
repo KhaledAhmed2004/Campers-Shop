@@ -20,18 +20,22 @@ CampTime is a versatile e-commerce platform where users can browse, add, update,
 
 **Frontend** <br/>
 
-1. **React**
-2. **TypeScript**
-3. **DaisyUi**
-4. **React Redux and RTK Query**
-5. **React Hook form**
+Frontend
+React - For building the user interface.
+TypeScript - For type safety in the frontend.
+Redux Toolkit (RTK Query) - For efficient state management and API data fetching.
+React Redux - For managing global application state.
+React Hook Form - For handling form inputs and validation.
+Ant Design - For pre-built, customizable UI components.
+Tailwind CSS - For utility-first CSS styling.
 
-**Backend and Database** <br/>
-
-1. **Node.js**
-2. **TypeScript**
-3. **Express.js**
-4. **Mongodb**
+Backend and Database
+Node.js - JavaScript runtime for server-side development.
+TypeScript - For adding type safety on the backend.
+Express.js - Web framework for building the backend API.
+MongoDB - NoSQL database for storing application data.
+Mongoose - ODM (Object Data Modeling) library for MongoDB.
+Zod - Schema validation library for TypeScript, ensuring data validation.
 
 # Installation Guideline
 
